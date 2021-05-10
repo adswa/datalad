@@ -240,6 +240,8 @@ def _get_flexible_source_candidates_for_submodule(ds, sm):
 
     cost_candidate_expr = re.compile('[0-9][0-9][0-9].*')
     candcfg_prefix = 'datalad.get.subdataset-source-candidate-'
+    # initialize a pile of shame for all potentially mis-built URLs
+    mismatches = {}
     for name, tmpl in [(c[len(candcfg_prefix):],
                         ds_repo.config[c])
                        for c in ds_repo.config.keys()
@@ -252,6 +254,9 @@ def _get_flexible_source_candidates_for_submodule(ds, sm):
             # for a dataset id, for example.
             lgr.debug('Caught a key error in the generation of a submodule '
                       'URL using the template %s (%s)', tmpl, exc_str(e))
+            # store the mismatch in order to report it upwards should 'get'
+            # ultimatly fail
+            mismatches[tmpl] = exc_str(e)
             continue
         # we don't want "flexible_source_candidates" here, this is
         # configuration that can be made arbitrarily precise from the
@@ -293,7 +298,7 @@ def _get_flexible_source_candidates_for_submodule(ds, sm):
     # unique() takes out the duplicated at the tail end
     clone_urls = unique(clone_urls, lambda x: x['url'])
 
-    return clone_urls
+    return clone_urls, mismatches
 
 
 def _install_subds_from_flexible_source(ds, sm, **kwargs):
@@ -310,24 +315,41 @@ def _install_subds_from_flexible_source(ds, sm, **kwargs):
     """
     sm_path = op.relpath(sm['path'], start=sm['parentds'])
     # compose a list of candidate clone URLs
-    clone_urls = _get_flexible_source_candidates_for_submodule(ds, sm)
+    clone_urls, mismatch = _get_flexible_source_candidates_for_submodule(ds, sm)
 
     # prevent inevitable exception from `clone`
     dest_path = op.join(ds.path, sm_path)
     clone_urls_ = [src['url'] for src in clone_urls if src['url'] != dest_path]
 
     if not clone_urls:
-        # yield error
-        yield get_status_dict(
-            action='install',
-            ds=ds,
-            status='error',
-            message=(
-                "Have got no candidates to install subdataset %s from.",
-                sm_path),
-            logger=lgr,
-        )
-        return
+        if not bool(mismatch):
+            # the mismatch dictionary is not empty - we have mismatched URLs
+            # yield error
+            yield get_status_dict(
+                action='install',
+                ds=ds,
+                status='error',
+                message=(
+                    "Have got no candidates to install subdataset %s from."
+                    "Hint: I failed constructing URLs with the following"
+                    "templates: %s",
+                    sm_path, mismatch.items()),
+                logger=lgr,
+            )
+            return
+
+        else:
+            # yield error
+            yield get_status_dict(
+                action='install',
+                ds=ds,
+                status='error',
+                message=(
+                    "Have got no candidates to install subdataset %s from.",
+                    sm_path),
+                logger=lgr,
+            )
+            return
 
     for res in clone_dataset(
             clone_urls_,
