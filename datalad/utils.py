@@ -216,7 +216,7 @@ def get_home_envvars(new_home):
         # requires special handling, since it has a number of relevant variables
         # and also Python changed its behavior and started to respect USERPROFILE only
         # since python 3.8: https://bugs.python.org/issue36264
-        out['USERPROFILE'] = new_home
+        #out['USERPROFILE'] = new_home
         out['HOMEDRIVE'], out['HOMEPATH'] = splitdrive(new_home)
     return {v: val for v, val in out.items() if v in os.environ}
 
