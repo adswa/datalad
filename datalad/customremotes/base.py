@@ -122,7 +122,7 @@ class AnnexCustomRemote(SpecialRemote):
         return self.COST
 
     def getavailability(self):
-        return self.AVAILABILITY.lower()
+        return self.AVAILABILITY
 
 
 # this function only has anecdotal value and is not used anywhere
