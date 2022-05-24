@@ -34,6 +34,7 @@ from datalad.interface.common_opts import (
 )
 from datalad.interface.results import get_status_dict
 from datalad.interface.utils import eval_results
+from datalad.log import log_progress
 from datalad.support.constraints import (
     EnsureNone,
     EnsureStr,
@@ -168,12 +169,27 @@ class Unlock(Interface):
 
         # Do the actual unlocking.
         for ds_path, files in to_unlock.items():
+            # register for final orderly take down
+            pbar_id = 'unlock'
+            log_progress(
+                lgr.info, pbar_id,
+                'Unlocking dataset content',
+                unit=' Files',
+                label='Unlock',
+                total=len(files),
+            )
             ds = Dataset(ds_path)
-            for r in ds.repo._call_annex_records(
+            for r in ds.repo._call_annex_records_items_(
                     ["unlock"],
-                    files=files):
+                    files=files,
+                    ):
+                log_progress(
+                    lgr.info, pbar_id, "Unlock:",
+                    label="Unlocking files", update=1, increment=True)
                 yield get_status_dict(
                     path=op.join(ds.path, r['file']),
                     status='ok' if r['success'] else 'error',
                     type='file',
                     **res_kwargs)
+            log_progress(
+                lgr.info, pbar_id, "Completed unlocking")
