@@ -179,6 +179,8 @@ class Unlock(Interface):
                 total=len(files),
             )
             ds = Dataset(ds_path)
+            i = 0
+            print(ds.path, len(files))
             for r in ds.repo._call_annex_records_items_(
                     ["unlock"],
                     files=files,
@@ -186,10 +188,12 @@ class Unlock(Interface):
                 log_progress(
                     lgr.info, pbar_id, "Unlock:",
                     label="Unlocking files", update=1, increment=True)
+                i += 1
                 yield get_status_dict(
                     path=op.join(ds.path, r['file']),
                     status='ok' if r['success'] else 'error',
                     type='file',
                     **res_kwargs)
+            print(i)
             log_progress(
                 lgr.info, pbar_id, "Completed unlocking")
