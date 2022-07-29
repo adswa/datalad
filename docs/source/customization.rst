@@ -10,13 +10,13 @@ Customization and extension of functionality
 DataLad provides numerous commands that cover many use cases. However, there
 will always be a demand for further customization or extensions of built-in
 functionality at a particular site, or for an individual user. DataLad
-addresses this need with a mechanism for extending particular Datalad
+addresses this need with a mechanism for extending particular DataLad
 functionality, such as metadata extractor, or providing entire command suites
 for a specialized purpose.
 
 As the name suggests, a :term:`DataLad extension` package is a proper Python package.
 Consequently, there is a significant amount of boilerplate code involved in the
-creation of a new Datalad extension. However, this overhead enables a number of
+creation of a new DataLad extension. However, this overhead enables a number of
 useful features for extension developers:
 
 - extensions can provide any number of additional commands that can be grouped into

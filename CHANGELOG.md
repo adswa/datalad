@@ -1,3 +1,191 @@
+# 0.17.2 (Sat Jul 16 2022)
+
+#### 🐛 Bug Fix
+
+- BF(TST): do proceed to proper test for error being caught for recent git-annex on windows with symlinks [#6850](https://github.com/datalad/datalad/pull/6850) ([@yarikoptic](https://github.com/yarikoptic))
+- Addressing problem testing against python 3.10 on Travis (skip more annex versions) [#6842](https://github.com/datalad/datalad/pull/6842) ([@yarikoptic](https://github.com/yarikoptic))
+- XFAIL test_runner_parametrized_protocol on python3.8 when getting duplicate output [#6837](https://github.com/datalad/datalad/pull/6837) ([@yarikoptic](https://github.com/yarikoptic))
+- BF: Make create's check for procedures work with several again [#6841](https://github.com/datalad/datalad/pull/6841) ([@adswa](https://github.com/adswa))
+- Support older pytests [#6836](https://github.com/datalad/datalad/pull/6836) ([@jwodder](https://github.com/jwodder))
+
+#### Authors: 3
+
+- Adina Wagner ([@adswa](https://github.com/adswa))
+- John T. Wodder II ([@jwodder](https://github.com/jwodder))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.17.1 (Mon Jul 11 2022)
+
+#### 🐛 Bug Fix
+
+- DOC: minor fix - consistent DataLad (not Datalad) in docs and CHANGELOG [#6830](https://github.com/datalad/datalad/pull/6830) ([@yarikoptic](https://github.com/yarikoptic))
+- DOC: fixup/harmonize Changelog for 0.17.0 a little [#6828](https://github.com/datalad/datalad/pull/6828) ([@yarikoptic](https://github.com/yarikoptic))
+- BF: use --python-match minor option in new datalad-installer release to match outside version of Python [#6827](https://github.com/datalad/datalad/pull/6827) ([@christian-monch](https://github.com/christian-monch) [@yarikoptic](https://github.com/yarikoptic))
+- Do not quote paths for ssh >= 9 [#6826](https://github.com/datalad/datalad/pull/6826) ([@christian-monch](https://github.com/christian-monch) [@yarikoptic](https://github.com/yarikoptic))
+- Suppress DeprecationWarning to allow for distutils to be used [#6819](https://github.com/datalad/datalad/pull/6819) ([@yarikoptic](https://github.com/yarikoptic))
+- RM(TST): remove testing of datalad.test which was removed from 0.17.0 [#6822](https://github.com/datalad/datalad/pull/6822) ([@yarikoptic](https://github.com/yarikoptic))
+- Avoid import of nose-based tests.utils, make  skip_if_no_module() and skip_if_no_network() allowed at module level [#6817](https://github.com/datalad/datalad/pull/6817) ([@jwodder](https://github.com/jwodder))
+- BF(TST): use higher level asyncio.run instead of asyncio.get_event_loop in test_inside_async [#6808](https://github.com/datalad/datalad/pull/6808) ([@yarikoptic](https://github.com/yarikoptic))
+
+#### Authors: 3
+
+- Christian Mönch ([@christian-monch](https://github.com/christian-monch))
+- John T. Wodder II ([@jwodder](https://github.com/jwodder))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.17.0 (Thu Jul 7 2022) -- pytest migration
+
+#### 💫 Enhancements and new features
+- "log" progress bar now reports about starting a specific action as well. [#6756](https://github.com/datalad/datalad/pull/6756) (by @yarikoptic)
+- Documentation and behavior of traceback reporting for log messages via `DATALAD_LOG_TRACEBACK` was improved to yield a more compact report. The documentation for this feature has been clarified. [#6746](https://github.com/datalad/datalad/pull/6746) (by @mih)
+- `datalad unlock` gained a progress bar. [#6704](https://github.com/datalad/datalad/pull/6704) (by @adswa)
+- When `create-sibling-gitlab` is called on non-existing subdatasets or paths it now returns an impossible result instead of no feedback at all. [#6701](https://github.com/datalad/datalad/pull/6701) (by @adswa)
+- `datalad wtf` includes a report on file system types of commonly used paths. [#6664](https://github.com/datalad/datalad/pull/6664) (by @adswa)
+- Use next generation metadata code in search, if it is available. [#6518](https://github.com/datalad/datalad/pull/6518) (by @christian-monch)
+
+#### 🪓 Deprecations and removals
+- Remove unused and untested log helpers `NoProgressLog` and `OnlyProgressLog`. [#6747](https://github.com/datalad/datalad/pull/6747) (by @mih)
+- Remove unused `sorted_files()` helper. [#6722](https://github.com/datalad/datalad/pull/6722) (by @adswa)
+- Discontinued the value `stdout` for use with the config variable `datalad.log.target` as its use would inevitably break special remote implementations. [#6675](https://github.com/datalad/datalad/pull/6675) (by @bpoldrack)
+- `AnnexRepo.add_urls()` is deprecated in favor of `AnnexRepo.add_url_to_file()` or a direct call to `AnnexRepo.call_annex()`. [#6667](https://github.com/datalad/datalad/pull/6667) (by @mih)
+- `datalad test` command and supporting functionality (e.g., `datalad.test`) were removed. [#6273](https://github.com/datalad/datalad/pull/6273) (by @jwodder)
+
+#### 🐛 Bug Fixes
+- `export-archive` does not rely on `normalize_path()` methods anymore and became more robust when called from subdirectories. [#6745](https://github.com/datalad/datalad/pull/6745) (by @adswa)
+- Sanitize keys before checking content availability to ensure that the content availability of files with URL- or custom backend keys is correctly determined and marked. [#6663](https://github.com/datalad/datalad/pull/6663) (by @adswa)
+- Ensure saving a new subdataset to a superdataset yields a valid `.gitmodules` record regardless of whether and how a path constraint is given to the `save()` call. Fixes #6547 [#6790](https://github.com/datalad/datalad/pull/6790) (by @mih)
+- `save` now repairs annex symlinks broken by a `git-mv` operation prior recording a new dataset state. Fixes #4967 [#6795](https://github.com/datalad/datalad/pull/6795) (by @mih)
+
+#### 📝 Documentation
+- API documentation for log helpers, like `log_progress()` is now included in the renderer documentation. [#6746](https://github.com/datalad/datalad/pull/6746) (by @mih)
+- New design document on progress reporting. [#6734](https://github.com/datalad/datalad/pull/6734) (by @mih)
+- Explain downstream consequences of using `--fast` option in `addurls`. [#6684](https://github.com/datalad/datalad/pull/6684) (by @jdkent)
+
+#### 🏠 Internal
+- Inline code of `create-sibling-ria` has been refactored to an internal helper to check for siblings with particular names across dataset hierarchies in `datalad-next`, and is reintroduced into core to modularize the code base further. [#6706](https://github.com/datalad/datalad/pull/6706) (by @adswa)
+- `get_initialized_logger` now lets a given `logtarget` take precedence over `datalad.log.target`. [#6675](https://github.com/datalad/datalad/pull/6675) (by @bpoldrack)
+- Many uses of deprecated call options were replaced with the recommended ones. [#6273](https://github.com/datalad/datalad/pull/6273) (by @jwodder)
+- Get rid of `asyncio` import by defining few noops methods from `asyncio.protocols.SubprocessProtocol` directly in `WitlessProtocol`. [#6648](https://github.com/datalad/datalad/pull/6648) (by @yarikoptic)
+- Consolidate `GitRepo.remove()` and `AnnexRepo.remove()` into a single implementation. [#6783](https://github.com/datalad/datalad/pull/6783) (by @mih)
+#### 🛡 Tests
+- Discontinue use of `with_testrepos` decorator other than for the deprecation cycle for `nose`. [#6690](https://github.com/datalad/datalad/pull/6690) (by @mih @bpoldrack) See [#6144](https://github.com/datalad/datalad/issues/6144) for full list of changes.
+- Remove usage of deprecated `AnnexRepo.add_urls` in tests. [#6683](https://github.com/datalad/datalad/pull/6683) (by @bpoldrack)
+- Minimalistic (adapters, no assert changes, etc) migration from `nose` to `pytest`.
+  Support functionality possibly used by extensions and relying on `nose` helpers is left in place to avoid affecting their run time and defer migration of their test setups.. [#6273](https://github.com/datalad/datalad/pull/6273) (by @jwodder)
+
+#### Authors: 7
+
+- Yaroslav Halchenko (@yarikoptic)
+- Michael Hanke (@mih)
+- Benjamin Poldrack (@bpoldrack)
+- Adina Wagner (@adswa)
+- John T. Wodder (@jwodder)
+- Christian Mönch (@christian-monch)
+- James Kent (@jdkent)
+
+# 0.16.7 (Wed Jul 06 2022)
+
+#### 🐛 Bug Fix
+
+- Fix broken annex symlink after git-mv before saving + fix a race condition in ssh copy test [#6809](https://github.com/datalad/datalad/pull/6809) ([@christian-monch](https://github.com/christian-monch) [@mih](https://github.com/mih) [@yarikoptic](https://github.com/yarikoptic))
+- Do not ignore already known status info on submodules [#6790](https://github.com/datalad/datalad/pull/6790) ([@mih](https://github.com/mih))
+- Fix "common data source" test to use a valid URL (maint-based & extended edition) [#6788](https://github.com/datalad/datalad/pull/6788) ([@mih](https://github.com/mih) [@yarikoptic](https://github.com/yarikoptic))
+- Upload coverage from extension tests to Codecov [#6781](https://github.com/datalad/datalad/pull/6781) ([@jwodder](https://github.com/jwodder))
+- Clean up line end handling in GitRepo [#6768](https://github.com/datalad/datalad/pull/6768) ([@christian-monch](https://github.com/christian-monch))
+- Do not skip file-URL tests on windows [#6772](https://github.com/datalad/datalad/pull/6772) ([@christian-monch](https://github.com/christian-monch))
+- Fix test errors caused by updated chardet v5 release [#6777](https://github.com/datalad/datalad/pull/6777) ([@christian-monch](https://github.com/christian-monch))
+- Preserve final trailing slash in ``call_git()`` output [#6754](https://github.com/datalad/datalad/pull/6754) ([@adswa](https://github.com/adswa) [@yarikoptic](https://github.com/yarikoptic) [@christian-monch](https://github.com/christian-monch))
+
+#### ⚠️ Pushed to `maint`
+
+- Make sure a subdataset is saved with a complete .gitmodules record ([@mih](https://github.com/mih))
+
+#### Authors: 5
+
+- Adina Wagner ([@adswa](https://github.com/adswa))
+- Christian Mönch ([@christian-monch](https://github.com/christian-monch))
+- John T. Wodder II ([@jwodder](https://github.com/jwodder))
+- Michael Hanke ([@mih](https://github.com/mih))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.16.6 (Tue Jun 14 2022)
+
+#### 🐛 Bug Fix
+
+- Prevent duplicated result rendering when searching in default datasets [#6765](https://github.com/datalad/datalad/pull/6765) ([@christian-monch](https://github.com/christian-monch))
+- BF(workaround): skip test_ria_postclonecfg on OSX for now ([@yarikoptic](https://github.com/yarikoptic))
+- BF(workaround to #6759): if saving credential failed, just log error and continue [#6762](https://github.com/datalad/datalad/pull/6762) ([@yarikoptic](https://github.com/yarikoptic))
+- Prevent reentry of a runner instance [#6737](https://github.com/datalad/datalad/pull/6737) ([@christian-monch](https://github.com/christian-monch))
+
+#### Authors: 2
+
+- Christian Mönch ([@christian-monch](https://github.com/christian-monch))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.16.5 (Wed Jun 08 2022)
+
+#### 🐛 Bug Fix
+
+- BF: push to github - remove datalad-push-default-first config only in non-dry run to ensure we push default branch separately in next step [#6750](https://github.com/datalad/datalad/pull/6750) ([@yarikoptic](https://github.com/yarikoptic))
+- In addition to default (system) ssh version, report configured ssh; fix ssh version parsing on Windows [#6729](https://github.com/datalad/datalad/pull/6729) ([@yarikoptic](https://github.com/yarikoptic))
+
+#### Authors: 1
+
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.16.4 (Thu Jun 02 2022)
+
+#### 🐛 Bug Fix
+
+- BF(TST): RO operations - add test directory into git safe.directory [#6726](https://github.com/datalad/datalad/pull/6726) ([@yarikoptic](https://github.com/yarikoptic))
+- DOC: fixup of docstring for skip_ssh [#6727](https://github.com/datalad/datalad/pull/6727) ([@yarikoptic](https://github.com/yarikoptic))
+- DOC: Set language in Sphinx config to en [#6727](https://github.com/datalad/datalad/pull/6727) ([@adswa](https://github.com/adswa))
+- BF: Catch KeyErrors from unavailable WTF infos [#6712](https://github.com/datalad/datalad/pull/6712) ([@adswa](https://github.com/adswa))
+- Add annex.private to ephemeral clones. That would make git-annex not assign shared (in git-annex branch) annex uuid. [#6702](https://github.com/datalad/datalad/pull/6702) ([@bpoldrack](https://github.com/bpoldrack) [@adswa](https://github.com/adswa))
+- BF: require argcomplete version at least 1.12.3 to test/operate correctly [#6693](https://github.com/datalad/datalad/pull/6693) ([@yarikoptic](https://github.com/yarikoptic))
+- Replace Zenodo DOI with JOSS for due credit [#6725](https://github.com/datalad/datalad/pull/6725) ([@adswa](https://github.com/adswa))
+
+#### Authors: 3
+
+- Adina Wagner ([@adswa](https://github.com/adswa))
+- Benjamin Poldrack ([@bpoldrack](https://github.com/bpoldrack))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
+# 0.16.3 (Thu May 12 2022)
+
+#### 🐛 Bug Fix
+
+- No change for a PR to trigger release [#6692](https://github.com/datalad/datalad/pull/6692) ([@yarikoptic](https://github.com/yarikoptic))
+- Sanitize keys before checking content availability to ensure correct value for keys with URL or custom backend [#6665](https://github.com/datalad/datalad/pull/6665) ([@adswa](https://github.com/adswa) [@yarikoptic](https://github.com/yarikoptic))
+- Change a key-value pair in drop result record [#6625](https://github.com/datalad/datalad/pull/6625) ([@mslw](https://github.com/mslw))
+- Link docs of datalad-next [#6677](https://github.com/datalad/datalad/pull/6677) ([@mih](https://github.com/mih))
+- Fix `GitRepo.get_branch_commits_()` to handle branch names conflicts with paths [#6661](https://github.com/datalad/datalad/pull/6661) ([@mih](https://github.com/mih))
+- OPT: AnnexJsonProtocol - avoid dragging possibly long data around [#6660](https://github.com/datalad/datalad/pull/6660) ([@yarikoptic](https://github.com/yarikoptic))
+- Remove two too prominent create() INFO log message that duplicate DEBUG log and harmonize some other log messages [#6638](https://github.com/datalad/datalad/pull/6638) ([@mih](https://github.com/mih) [@yarikoptic](https://github.com/yarikoptic))
+- Remove unsupported parameter create_sibling_ria(existing=None) [#6637](https://github.com/datalad/datalad/pull/6637) ([@mih](https://github.com/mih))
+- Add released plugin to .autorc to annotate PRs on when released [#6639](https://github.com/datalad/datalad/pull/6639) ([@yarikoptic](https://github.com/yarikoptic))
+
+#### Authors: 4
+
+- Adina Wagner ([@adswa](https://github.com/adswa))
+- Michael Hanke ([@mih](https://github.com/mih))
+- Michał Szczepanik ([@mslw](https://github.com/mslw))
+- Yaroslav Halchenko ([@yarikoptic](https://github.com/yarikoptic))
+
+---
+
 # 0.16.2 (Thu Apr 21 2022)
 
 #### 🐛 Bug Fix
@@ -1234,7 +1422,7 @@
 - The credential helper no longer asks the user to repeat tokens or
   AWS keys.  ([#5219][])
 
-- The new option `datalad.locations.sockets` controls where Datalad
+- The new option `datalad.locations.sockets` controls where DataLad
   stores SSH sockets, allowing users to more easily work around file
   system and path length restrictions.  ([#5238][])
 
@@ -2693,7 +2881,7 @@ Primarily bugfixes with some optimizations and refactorings.
 - [addurls][] now suggests close matches when the URL or file format
   contains an unknown field.  ([#3594][])
 
-- Shared logic used in the setup.py files of Datalad and its
+- Shared logic used in the setup.py files of DataLad and its
   extensions has been moved to modules in the _datalad_build_support/
   directory.  ([#3600][])
 

@@ -8,12 +8,13 @@
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 """Module to help maintain a registry of versions for external modules etc
 """
+import re
 import sys
 import os.path as op
 from os import linesep
 
-from distutils.version import LooseVersion
 from itertools import chain
+from looseversion import LooseVersion
 
 from datalad.log import lgr
 # import version helper from config to have only one implementation
@@ -97,22 +98,39 @@ def _get_bundled_git_version():
         return out.split()[2]
 
 
-def _get_system_ssh_version():
-    """Return version of ssh available system-wide
-
-    Annex prior 20170302 was using bundled version, but now would use system one
-    if installed
+def _get_ssh_version(exe=None):
+    """Return version of ssh
+    Annex prior 20170302 was using bundled version, then across all systems
+    we used system one if installed, and then switched to the one defined in
+    configuration, with system-wide (not default in PATH e.g. from conda)
+    "forced" on Windows.  If no specific executable provided in `exe`, we will
+    use the one in configuration
     """
+    if exe is None:
+        from datalad import cfg
+        exe = cfg.obtain("datalad.ssh.executable")
     out = _runner.run(
-        'ssh -V'.split(),
+        [exe, '-V'],
         protocol=StdOutErrCapture)
     # apparently spits out to err but I wouldn't trust it blindly
     stdout = out['stdout']
     if out['stderr'].startswith('OpenSSH'):
         stdout = out['stderr']
-    assert stdout.startswith('OpenSSH')  # that is the only one we care about atm
-    return stdout.split(' ', 1)[0].rstrip(',.').split('_')[1]
+    match = re.match(
+        "OpenSSH.*_([0-9][0-9]*)\\.([0-9][0-9]*)(p([0-9][0-9]*))?",
+        stdout)
+    if match:
+        return "{}.{}p{}".format(
+            match.groups()[0],
+            match.groups()[1],
+            match.groups()[3])
+    raise AssertionError(f"no OpenSSH client found: {stdout}")
 
+
+def _get_system_ssh_version():
+    """Return version of the default on the system (in the PATH) ssh
+    """
+    return _get_ssh_version("ssh")
 
 def _get_system_7z_version():
     """Return version of 7-Zip"""
